@@ -40,27 +40,29 @@
 */
 
 void qh_fprintf(FILE *fp, int msgcode, const char *fmt, ... ) {
-    va_list args;
+    if (fp != stderr) {
+        va_list args;
 
-    if (!fp) {
-        /* could use qhmem.ferr, but probably better to be cautious */
-        qh_fprintf_stderr(6232, "Qhull internal error (userprintf.c): fp is 0.  Wrong qh_fprintf called.\n");
-        qh_errexit(6232, NULL, NULL);
-    }
-    va_start(args, fmt);
+        if (!fp) {
+            /* could use qhmem.ferr, but probably better to be cautious */
+            qh_fprintf_stderr(6232, "Qhull internal error (userprintf.c): fp is 0.  Wrong qh_fprintf called.\n");
+            qh_errexit(6232, NULL, NULL);
+        }
+        va_start(args, fmt);
 #if qh_QHpointer
-    if (qh_qh && qh ANNOTATEoutput) {
+        if (qh_qh && qh ANNOTATEoutput) {
 #else
-    if (qh ANNOTATEoutput) {
+        if (qh ANNOTATEoutput) {
 #endif
-      fprintf(fp, "[QH%.4d]", msgcode);
-    }else if (msgcode >= MSG_ERROR && msgcode < MSG_STDERR ) {
-      fprintf(fp, "QH%.4d ", msgcode);
-    }
-    vfprintf(fp, fmt, args);
-    va_end(args);
+          fprintf(fp, "[QH%.4d]", msgcode);
+        }else if (msgcode >= MSG_ERROR && msgcode < MSG_STDERR ) {
+          fprintf(fp, "QH%.4d ", msgcode);
+        }
+        vfprintf(fp, fmt, args);
+        va_end(args);
 
-    /* Place debugging traps here. Use with option 'Tn' */
+        /* Place debugging traps here. Use with option 'Tn' */
+    }
 
 } /* qh_fprintf */
 
